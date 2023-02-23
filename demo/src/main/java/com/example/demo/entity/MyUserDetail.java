@@ -3,13 +3,13 @@ package com.example.demo.entity;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import lombok.Data;
 
-@Data
 public class MyUserDetail implements UserDetails {
 	
 	private String username;
@@ -17,12 +17,12 @@ public class MyUserDetail implements UserDetails {
 	private boolean enabled;
 	private List<GrantedAuthority> authority;
 	
-	public MyUserDetail(MyUserDetail user) {
+	public MyUserDetail(User user) {
 		this.username = user.getUsername();
 		this.password = user.getPassword();
-		user.enabled = user.isEnabled();
-		
-		//this.authority = Arrays.stream(user.get)
+		this.enabled = user.isEnabled();
+		this.authority = Arrays.stream(user.getRole().split(",")).map(SimpleGrantedAuthority :: new)
+				.collect(Collectors.toList());
 	}
 	
 	public MyUserDetail() {
@@ -31,43 +31,36 @@ public class MyUserDetail implements UserDetails {
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		return authority;
 	}
 
 	@Override
 	public String getPassword() {
-		// TODO Auto-generated method stub
-		return null;
+		return password;
 	}
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
+		return username;
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return enabled;
 	}
 }
